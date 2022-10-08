@@ -1,36 +1,40 @@
 #include "monty.h"
 
 /**
- * get_op - check op against valid opcodes
- * @op: op to check
- * @stack: double pointer to the beginning of the stack
- * @line_no: script line number
- * Return: void
+ * get_opcodes - selects the correct opcode to perform
+ * @opc: opcode passed
+ *
+ * Return: pointer to the function that executes the opcode
  */
-void get_op(char *op, stack_t **stack, unsigned int line_no)
+void (*get_opcodes(char *opc))(stack_t **stack, unsigned int line_number)
 {
-	size_t i;
-	instruction_t valid_ops[] = {
-		{"push", m_push},
-		{"pall", m_pall},
-		{"pint", m_pint},
-		{"pop", m_pop},
-		{"swap", m_swap},
-		{"add", m_add},
-		{"nop", m_nop},
+	instruction_t valid_codes[] = {
+		{"push", _push},
+		{"pall", _pall},
+		{"pint", _pint},
+		{"pop", _pop},
+		{"swap", _swap},
+		{"queue", _queue},
+		{"stack", _stack},
+		{"add", _add},
+		{"nop", _nop},
+		{"sub", _sub},
+		{"mul", _mul},
+		{"div", _div},
+		{"mod", _mod},
+		{"pchar", _pchar},
+		{"pstr", _pstr},
+		{"rotl", _rotl},
+		{"rotr", _rotr},
 		{NULL, NULL}
 	};
+	int i;
 
-	for (i = 0; valid_ops[i].opcode != NULL; i++)
+	for (i = 0; valid_codes[i].opcode; i++)
 	{
-		if (strcmp(valid_ops[i].opcode, op) == 0)
-		{
-			valid_ops[i].f(stack, line_no);
-			return;
-		}
+		if (strcmp(valid_codes[i].opcode, opc) == 0)
+			break;
 	}
-	dprintf(STDOUT_FILENO,
-			"L%u: unknown instruction %s\n",
-			line_no, op);
-	exit(EXIT_FAILURE);
+
+	return (valid_codes[i].f);
 }

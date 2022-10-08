@@ -1,38 +1,90 @@
 #include "monty.h"
 
 /**
- * add_node - add a new node to a circular linked list
- * @stack: double pointer to the beginning of the circular linked list
- * @n: value to add to the new node
- *
- * Description: the function will add the node to the begining if in
- * stack mode and the end if in queue mode
- *
- * Return: pointer to the new node, or NULL on failure
+ *add_dnodeint_end - add a note at the end of the doubly link list
+ *@head: first position of linked list
+ *@n: data to store
+ *Return: a doubly linked list
  */
-stack_t *add_node(stack_t **stack, const int n)
+stack_t *add_dnodeint_end(stack_t **head, const int n)
 {
-	stack_t *new;
+	stack_t *temp, *aux;
 
-	if (stack == NULL)
+	if (head == NULL)
 		return (NULL);
-	new = malloc(sizeof(stack_t));
-	if (new == NULL)
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
+	{
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
+	}
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
+	{
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
+	}
+	aux = *head;
+	while (aux->next)
+		aux = aux->next;
+	temp->next = aux->next;
+	temp->prev = aux;
+	aux->next = temp;
+	return (aux->next);
+}
+
+/**
+ *add_dnodeint - add a note at the begining of the doubly link list
+ *@head: first position of linked list
+ *@n: data to store
+ *Return: a doubly linked list
+ */
+stack_t *add_dnodeint(stack_t **head, const int n)
+{
+	stack_t *temp;
+
+	if (head == NULL)
 		return (NULL);
-	new->n = n;
-	if (*stack == NULL)
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
 	{
-		new->prev = new;
-		new->next = new;
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
 	}
-	else
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
 	{
-		(*stack)->prev->next = new;
-		new->prev = (*stack)->prev;
-		(*stack)->prev = new;
-		new->next = *stack;
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
 	}
-	if (var.queue == STACK || var.stack_len == 0)
-		*stack = new;
-	return (new);
+	(*head)->prev = temp;
+	temp->next = (*head);
+	temp->prev = NULL;
+	*head = temp;
+	return (*head);
+}
+
+/**
+ * free_dlistint - frees the doubly linked list
+ *
+ * @head: head of the list
+ * Return: no return
+ */
+void free_dlistint(stack_t *head)
+{
+	stack_t *tmp;
+
+	while ((tmp = head) != NULL)
+	{
+		head = head->next;
+		free(tmp);
+	}
 }
